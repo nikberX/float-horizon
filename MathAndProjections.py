@@ -1,11 +1,8 @@
 import numpy as np
-
-def CKM_to_CKH(vertex, origin):
+#worldToViewer
+def worldToViewer(vertex, origin):
     rows, cols = vertex.shape
-
-    #adds col of ones to right side of matrix
     vertex_ex = np.c_[vertex, np.ones(rows)]
-
     T = np.array([[1, 0, 0, 0],
                   [0, 1, 0, 0],
                   [0, 0, 1, 0],
@@ -22,7 +19,7 @@ def CKM_to_CKH(vertex, origin):
                       [0, 0, 0, 1]])
 
     d = np.sqrt(origin[0] ** 2 + origin[1] ** 2)
-
+    s = np.sqrt(d ** 2 + origin[2] ** 2)
     if d != 0:
         R_uy = np.array([[origin[1] / d, 0, origin[0] / d, 0],
                          [0, 1, 0, 0],
@@ -30,8 +27,6 @@ def CKM_to_CKH(vertex, origin):
                          [0, 0, 0, 1]])
     else:
         R_uy = np.eye(4)
-
-    s = np.sqrt(d**2 + origin[2] ** 2)
 
     if s != 0:
         R_wx = np.array([[1, 0, 0, 0],
@@ -60,7 +55,7 @@ def parallel_proj(vertex, s):
     return vertex[:, 0:2]
 
 
-def CKK_to_CKEi(vertex, pk, xc, yc, xe, ye):
+def viewerPlaneToScreenIdealized(vertex, pk, xc, yc, xe, ye):
     for point in vertex:
         point[0] *= xe / pk
         point[1] *= -ye / pk
@@ -79,7 +74,7 @@ def plane_coef(face, all_edges):
     D = -(A * e[0][0] + B * e[0][1] + C * e[0][2])
 
     return np.array([A, B, C, D])
-
+#weight center
 def plane_w_center(all_edges):
     edges = np.array(all_edges)
     return np.apply_along_axis(sum, 0, edges) / edges.shape[0]
